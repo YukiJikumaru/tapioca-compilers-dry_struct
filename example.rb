@@ -25,8 +25,10 @@ class Example < ::Dry::Struct
   attribute  :string6, Types::Nil | Types::String
 
   attribute  :integer1, Types::Integer
-  attribute  :integer2, Types::Coercible::Integer
-  attribute  :integer3, Types::Params::Integer
+  attribute  :integer2, Types::Nominal::Integer
+  attribute  :integer3, Types::Strict::Integer
+  attribute  :integer4, Types::Coercible::Integer
+  attribute  :integer5, Types::Params::Integer
 
   attribute  :date1, Types::Date
   attribute  :date2, Types::Params::Date
@@ -40,12 +42,15 @@ class Example < ::Dry::Struct
   attribute? :klass1, Fooo
 
   attribute? :constructor1, Types.Constructor(Fooo)
+  attribute? :constructor2, Types.Constructor(::Range)
+  attribute? :constructor3, Types.Constructor(::Set)
 
   attribute? :hash1, Types::Hash.schema(name: Types::String, age: Types::Coercible::Integer)
 
   attribute? :interface1, Types.Interface(:call).optional
 
-  attribute? :instance1, Types.Instance(Range)
+  attribute? :instance1, Types.Instance(::Range)
+  attribute? :instance2, Types.Instance(::Set)
 
   attribute  :sum1, Types::Nil | Types::String | Types::Integer
   attribute  :sum2, Types::Nil | Types.Array(Types::String) | Types.Array(Types::Integer)
@@ -53,4 +58,7 @@ class Example < ::Dry::Struct
   attribute  :array1, Types.Array(Types::String)
   attribute? :array2, Types.Array(Types::String)
   attribute  :array3, Types.Array(Fooo)
+  # attribute  :array4, Types.Array(Types.Array(String))
+  attribute  :array5, Types.Array(Types::Nil | Types::String | Types::Integer)
+  attribute  :array6, Types.Array(Types.Array(Types::Nil | Types::String | Types::Integer))
 end

@@ -15,23 +15,71 @@ module Tapioca
 
       sig { override.void }
       def decorate
-        compiler = TypeCompiler.new
+        compiler = DryAstCompiler.new
         root.create_path(constant) do |klass|
           constant.schema.each do |s|
             attribute_info = compiler.visit(s.to_ast)
-            puts attribute_info.inspect
-            puts
-            sorbet_type = TypeCompiler.to_sorbet_type(attribute_info[:type], attribute_info[:required])
-            # puts "#{attribute_info[:name]}"
-            puts <<~EOF
-            sig { returns(#{sorbet_type}) }
-            def #{attribute_info[:name]}; end
+            sorbet_type = self.class.to_sorbet_type(attribute_info[:type], attribute_info[:required])
+            klass.create_method(
+              attribute_info[:name],
+              return_type: sorbet_type,
+            )
+          end
+        end
+      end
 
-            EOF
-            # klass.create_method(
-            #   attribute_info[:name],
-            #   return_type: TypeCompiler.to_sorbet_type(attribute_info[:type], attribute_info[:required]),
-            # )
+      def self.to_sorbet_type(type, required)
+        base = if type.is_a?(DryAstCompiler::Sum)
+                 sum_to_sorbet_type(type)
+               elsif type.is_a?(DryAstCompiler::Undefined)
+                 '::T.untyped'
+               elsif type.is_a?(::Array)
+                 "::T::Array[#{to_sorbet_type(type[0], true)}]"
+               elsif type == ::Hash
+                 '::T::Hash[::T.untyped, ::T.untyped]'
+               elsif type == ::Time
+                 # '::Time'
+                 '::ActiveSupport::TimeWithZone'
+               elsif type == ::Range
+                 '::T::Range[::T.untyped]'
+               elsif type == ::Set
+                 '::T::Set[::T.untyped]'
+               elsif type == ::TrueClass || type == ::FalseClass
+                 '::T::Boolean'
+               else
+                 "::#{type.name}"
+               end
+        if base == '::T.untyped' || base == '::NilClass'
+          base
+        else
+          if required
+            base
+          else
+            if base.start_with?('::T.nilable')
+              base
+            else
+              "::T.nilable(#{base})"
+            end
+          end
+        end
+      end
+
+      def self.sum_to_sorbet_type(sum)
+        return '::T.untyped' if sum.include_undefined?
+
+        nilable = false
+        if sum.include_nilclass?
+          sum.delete_nilclass!
+          if sum.size < 2
+            "::T.nilable(#{to_sorbet_type(sum.types[0], true)})"
+          else
+            "::T.nilable(::T.any(#{sum.types.map { |t| to_sorbet_type(t, true)}.join(', ')}))"
+          end
+        else
+          if (sum.types - [::TrueClass, ::FalseClass]).empty?
+            'T::Boolean'
+          else
+            "::T.any(#{sum.types.map { |t| to_sorbet_type(t, true)}.join(', ')})"
           end
         end
       end
@@ -39,7 +87,7 @@ module Tapioca
   end
 end
 
-class TypeCompiler
+class DryAstCompiler
   class Undefined
     def to_s
       'Undefined'
@@ -61,26 +109,23 @@ class TypeCompiler
         @types << arg
       end
     end
+    def size
+      @types.size
+    end
+    def include_undefined?
+      @types.any? { |t| t.is_a?(Undefined) }
+    end
+    def include_nilclass?
+      @types.include?(NilClass)
+    end
+    def delete_nilclass!
+      @types.reject! { |t| t == NilClass }
+    end
     def to_s
-      @types.find { |t| }
       "Sum(#{@types.map(&:to_s).join(',')})"
     end
     def inspect
       to_s
-    end
-    def to_sorbet_type
-      return 'T.untyped' if @types.find { |t| t.is_a?(Undefined) }
-      nilable = false
-      if @types.find { |t| t == NilClass }
-        @types.reject! { |t| t == NilClass }
-        if @types.size < 2
-          "::T.nilable(#{TypeCompiler.to_sorbet_type(@types[0], true)})"
-        else
-          "::T.nilable(T.any(#{@types.map { |t| TypeCompiler.to_sorbet_type(t, true)}.join(', ')}))"
-        end
-      else
-        "::T.any(#{@types.map { |t| TypeCompiler.to_sorbet_type(t, true)}.join(', ')})"
-      end
     end
   end
 
@@ -91,7 +136,7 @@ class TypeCompiler
 
   def visit_key(node)
     name, required, rest = node
-    result = {
+    {
       name: name,
       required: required,
       type: visit(rest)
@@ -140,44 +185,12 @@ class TypeCompiler
     ::Hash
   end
 
+  def visit_hash(node)
+    ::Hash
+  end
+
   def visit_any(node)
     Undefined.new
   end
-
-  def self.to_sorbet_type(type, required)
-    base = if type.is_a?(Sum)
-             type.to_sorbet_type
-           elsif type.is_a?(Undefined)
-             '::T.untyped'
-           elsif type.is_a?(::Array)
-             "::T::Array[#{to_sorbet_type(type[0], true)}]"
-           elsif type == ::Hash
-             '::T::Hash[::T.untyped, ::T.untyped]'
-           elsif type == ::Time
-             '::T.any(::Time, ::ActiveSupport::TimeWithZone)'
-           elsif type == ::Range
-             '::T::Range[::T.untyped]'
-           elsif type == ::Set
-             '::T::Set[::T.untyped]'
-           elsif type == TrueClass || type == FalseClass
-             '::T::Boolean'
-           else
-             "::#{type.name}"
-           end
-    if base == '::T.untyped'
-      base
-    elsif base == '::NilClass'
-      base
-    else
-      if required
-        base
-      else
-        if base.start_with?('::T.nilable')
-          base
-        else
-          "::T.nilable(#{base})"
-        end
-      end
-    end
-  end
 end
+
