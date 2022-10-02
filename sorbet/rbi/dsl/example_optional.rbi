@@ -44,7 +44,7 @@ class ExampleOptional
   sig { returns(::T.nilable(::DateTime)) }
   def builtin13; end
 
-  sig { returns(::T.nilable(::ActiveSupport::TimeWithZone)) }
+  sig { returns(::T.nilable(::Time)) }
   def builtin14; end
 
   sig { returns(::T.nilable(::Array)) }
@@ -89,7 +89,7 @@ class ExampleOptional
   sig { returns(::T.nilable(::DateTime)) }
   def builtin28; end
 
-  sig { returns(::T.nilable(::ActiveSupport::TimeWithZone)) }
+  sig { returns(::T.nilable(::Time)) }
   def builtin29; end
 
   sig { returns(::T.nilable(::Array)) }
@@ -128,7 +128,7 @@ class ExampleOptional
   sig { returns(::T.nilable(::DateTime)) }
   def builtin41; end
 
-  sig { returns(::T.nilable(::ActiveSupport::TimeWithZone)) }
+  sig { returns(::T.nilable(::Time)) }
   def builtin42; end
 
   sig { returns(::T.nilable(::T::Boolean)) }
@@ -167,7 +167,7 @@ class ExampleOptional
   sig { returns(::T.nilable(::DateTime)) }
   def builtin54; end
 
-  sig { returns(::T.nilable(::ActiveSupport::TimeWithZone)) }
+  sig { returns(::T.nilable(::Time)) }
   def builtin55; end
 
   sig { returns(::T.nilable(::BigDecimal)) }
@@ -209,7 +209,7 @@ class ExampleOptional
   sig { returns(::T.nilable(::DateTime)) }
   def builtin68; end
 
-  sig { returns(::T.nilable(::ActiveSupport::TimeWithZone)) }
+  sig { returns(::T.nilable(::Time)) }
   def builtin69; end
 
   sig { returns(::T.nilable(::Array)) }

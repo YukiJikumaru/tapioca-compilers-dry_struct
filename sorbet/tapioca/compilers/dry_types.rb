@@ -1,5 +1,6 @@
 require 'dry-types'
 require 'dry-struct'
+require 'forwardable'
 
 module Tapioca
   module Compilers
@@ -31,6 +32,8 @@ module Tapioca
       def self.to_sorbet_type(type, required)
         base = if type.is_a?(::DryAstCompiler::Sum)
                  sum_to_sorbet_type(type)
+               elsif type.is_a?(::DryAstCompiler::Schema)
+                 experimental_schema_to_sorbet_type(type)
                elsif type.is_a?(::DryAstCompiler::Undefined)
                  '::T.untyped'
                elsif type.is_a?(::Array)
@@ -38,7 +41,7 @@ module Tapioca
                elsif type == ::Hash
                  '::T::Hash[::T.untyped, ::T.untyped]'
                elsif type == ::Time
-                 ENV['PREFER_PLAIN_TIME'] ? '::Time' : '::ActiveSupport::TimeWithZone'
+                 ENV['DRY_PREFER_PLAIN_TIME'] ? '::Time' : '::ActiveSupport::TimeWithZone'
                elsif type == ::Range
                  '::T::Range[::T.untyped]'
                elsif type == ::Set
@@ -58,6 +61,8 @@ module Tapioca
           else
             if base.start_with?('::T.nilable')
               base
+            elsif base.match?(/\A\{.*\}\z/)
+              "::T.nilable(#{base.gsub(/(\A\{ | \}\z)/, '')})"
             else
               "::T.nilable(#{base})"
             end
@@ -86,6 +91,17 @@ module Tapioca
           end
         end
       end
+
+      def self.experimental_schema_to_sorbet_type(schema)
+        return '::T::Hash[::T.untyped, ::T.untyped]' if schema.empty?
+
+        sigs = schema.map do |i|
+          sorbet_type = to_sorbet_type(i[:type], i[:required])
+          i[:name].is_a?(::String) ? "'#{i[:name]}' => #{sorbet_type}" : "#{i[:name]}: #{sorbet_type}"
+        end
+
+        "{ #{sigs.join(', ')} }"
+      end
     end
   end
 end
@@ -101,6 +117,10 @@ class DryAstCompiler
   end
 
   class Sum
+    extend ::Forwardable
+
+    delegate [:size] => :@types
+
     attr_reader :types
     def initialize(types= [])
       @types = types
@@ -111,9 +131,6 @@ class DryAstCompiler
       else
         @types << arg
       end
-    end
-    def size
-      @types.size
     end
     def include_undefined?
       @types.any? { |t| t.is_a?(Undefined) }
@@ -129,6 +146,16 @@ class DryAstCompiler
     end
     def inspect
       to_s
+    end
+  end
+
+  class Schema
+    extend ::Forwardable
+
+    delegate [:map, :empty?] => :@attribute_infos
+
+    def initialize(attribute_infos)
+      @attribute_infos = attribute_infos
     end
   end
 
@@ -185,7 +212,11 @@ class DryAstCompiler
   end
 
   def visit_schema(node)
-    ::Hash
+    if ENV['DRY_USE_EXPERIMENTAL_SHAPE']
+      Schema.new(node[0].map { |n| visit(n) })
+    else
+      ::Hash
+    end
   end
 
   def visit_hash(node)
