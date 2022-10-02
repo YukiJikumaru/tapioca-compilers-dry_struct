@@ -35,7 +35,7 @@ class ExampleNested
   sig { returns(::T.nilable(::T::Set[::T.untyped])) }
   def constructor3; end
 
-  sig { returns(::T.nilable(::T::Hash[::T.untyped, ::T.untyped])) }
+  sig { returns(::T.nilable(name: ::String, age: ::Integer)) }
   def hash1; end
 
   sig { returns(::T.nilable(::ExampleNested::Fooo)) }
