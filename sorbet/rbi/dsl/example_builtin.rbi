@@ -179,60 +179,60 @@ class ExampleBuiltin
   sig { returns(::T::Hash[::T.untyped, ::T.untyped]) }
   def builtin58; end
 
-  sig { returns(::T.nilable(::Class)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin59; end
 
-  sig { returns(::T.nilable(::String)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin60; end
 
-  sig { returns(::T.nilable(::Symbol)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin61; end
 
-  sig { returns(::T.nilable(::T::Boolean)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin62; end
 
-  sig { returns(::T.nilable(::T::Boolean)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin63; end
 
-  sig { returns(::T.nilable(::Integer)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin64; end
 
-  sig { returns(::T.nilable(::Float)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin65; end
 
-  sig { returns(::T.nilable(::BigDecimal)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin66; end
 
-  sig { returns(::T.nilable(::Date)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin67; end
 
-  sig { returns(::T.nilable(::DateTime)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin68; end
 
-  sig { returns(::T.nilable(::Time)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin69; end
 
-  sig { returns(::T.nilable(::Array)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin70; end
 
-  sig { returns(::T.nilable(::T::Hash[::T.untyped, ::T.untyped])) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin71; end
 
-  sig { returns(::T.nilable(::String)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin72; end
 
-  sig { returns(::T.nilable(::Integer)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin73; end
 
-  sig { returns(::T.nilable(::Float)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin74; end
 
-  sig { returns(::T.nilable(::BigDecimal)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin75; end
 
-  sig { returns(::T.nilable(::Array)) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin76; end
 
-  sig { returns(::T.nilable(::T::Hash[::T.untyped, ::T.untyped])) }
+  sig { returns(::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)) }
   def builtin77; end
 end

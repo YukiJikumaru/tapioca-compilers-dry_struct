@@ -9,7 +9,6 @@ class ExampleBuiltin < ::Dry::Struct
     include ::Dry.Types()
   end
 
-
   attribute :builtin01, Types::Nominal::Any
   attribute :builtin02, Types::Nominal::Nil
   attribute :builtin03, Types::Nominal::Symbol

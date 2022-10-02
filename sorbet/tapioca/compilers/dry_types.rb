@@ -20,7 +20,11 @@ module Tapioca
         root.create_path(constant) do |klass|
           constant.schema.each do |s|
             attribute_info = compiler.visit(s.to_ast)
-            sorbet_type = self.class.to_sorbet_type(attribute_info[:type], attribute_info[:required])
+            if s.type.class == ::Dry::Types::Maybe
+              sorbet_type = '::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)'
+            else
+              sorbet_type = self.class.to_sorbet_type(attribute_info[:type], attribute_info[:required])
+            end
             klass.create_method(
               attribute_info[:name],
               return_type: sorbet_type,
