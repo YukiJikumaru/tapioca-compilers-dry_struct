@@ -23,7 +23,7 @@ class ExampleBuiltin
   sig { returns(::T::Boolean) }
   def builtin06; end
 
-  sig { returns(T::Boolean) }
+  sig { returns(::T::Boolean) }
   def builtin07; end
 
   sig { returns(::Integer) }
@@ -68,7 +68,7 @@ class ExampleBuiltin
   sig { returns(::T::Boolean) }
   def builtin21; end
 
-  sig { returns(T::Boolean) }
+  sig { returns(::T::Boolean) }
   def builtin22; end
 
   sig { returns(::Integer) }
@@ -137,7 +137,7 @@ class ExampleBuiltin
   sig { returns(::T::Boolean) }
   def builtin44; end
 
-  sig { returns(T::Boolean) }
+  sig { returns(::T::Boolean) }
   def builtin45; end
 
   sig { returns(::Integer) }
@@ -178,4 +178,61 @@ class ExampleBuiltin
 
   sig { returns(::T::Hash[::T.untyped, ::T.untyped]) }
   def builtin58; end
+
+  sig { returns(::T.nilable(::Class)) }
+  def builtin59; end
+
+  sig { returns(::T.nilable(::String)) }
+  def builtin60; end
+
+  sig { returns(::T.nilable(::Symbol)) }
+  def builtin61; end
+
+  sig { returns(::T.nilable(::T::Boolean)) }
+  def builtin62; end
+
+  sig { returns(::T.nilable(::T::Boolean)) }
+  def builtin63; end
+
+  sig { returns(::T.nilable(::Integer)) }
+  def builtin64; end
+
+  sig { returns(::T.nilable(::Float)) }
+  def builtin65; end
+
+  sig { returns(::T.nilable(::BigDecimal)) }
+  def builtin66; end
+
+  sig { returns(::T.nilable(::Date)) }
+  def builtin67; end
+
+  sig { returns(::T.nilable(::DateTime)) }
+  def builtin68; end
+
+  sig { returns(::T.nilable(::ActiveSupport::TimeWithZone)) }
+  def builtin69; end
+
+  sig { returns(::T.nilable(::Array)) }
+  def builtin70; end
+
+  sig { returns(::T.nilable(::T::Hash[::T.untyped, ::T.untyped])) }
+  def builtin71; end
+
+  sig { returns(::T.nilable(::String)) }
+  def builtin72; end
+
+  sig { returns(::T.nilable(::Integer)) }
+  def builtin73; end
+
+  sig { returns(::T.nilable(::Float)) }
+  def builtin74; end
+
+  sig { returns(::T.nilable(::BigDecimal)) }
+  def builtin75; end
+
+  sig { returns(::T.nilable(::Array)) }
+  def builtin76; end
+
+  sig { returns(::T.nilable(::T::Hash[::T.untyped, ::T.untyped])) }
+  def builtin77; end
 end

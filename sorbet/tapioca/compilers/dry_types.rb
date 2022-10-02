@@ -4,18 +4,18 @@ require 'dry-struct'
 module Tapioca
   module Compilers
     class DryTypes < Tapioca::Dsl::Compiler
-      extend T::Sig
+      extend ::T::Sig
 
-      ConstantType = type_member {{ fixed: T.class_of(Encryptable) }}
+      ConstantType = type_member {{ fixed: ::T.class_of(::Dry::Struct) }}
 
-      sig { override.returns(T::Enumerable[Module]) }
+      sig { override.returns(::T::Enumerable[Module]) }
       def self.gather_constants
         all_classes.select { |c| c < ::Dry::Struct }
       end
 
       sig { override.void }
       def decorate
-        compiler = DryAstCompiler.new
+        compiler = ::DryAstCompiler.new
         root.create_path(constant) do |klass|
           constant.schema.each do |s|
             attribute_info = compiler.visit(s.to_ast)
@@ -29,23 +29,24 @@ module Tapioca
       end
 
       def self.to_sorbet_type(type, required)
-        base = if type.is_a?(DryAstCompiler::Sum)
+        base = if type.is_a?(::DryAstCompiler::Sum)
                  sum_to_sorbet_type(type)
-               elsif type.is_a?(DryAstCompiler::Undefined)
+               elsif type.is_a?(::DryAstCompiler::Undefined)
                  '::T.untyped'
                elsif type.is_a?(::Array)
                  "::T::Array[#{to_sorbet_type(type[0], true)}]"
                elsif type == ::Hash
                  '::T::Hash[::T.untyped, ::T.untyped]'
                elsif type == ::Time
-                 # '::Time'
-                 '::ActiveSupport::TimeWithZone'
+                 ENV['PREFER_PLAIN_TIME'] ? '::Time' : '::ActiveSupport::TimeWithZone'
                elsif type == ::Range
                  '::T::Range[::T.untyped]'
                elsif type == ::Set
                  '::T::Set[::T.untyped]'
                elsif type == ::TrueClass || type == ::FalseClass
                  '::T::Boolean'
+               elsif type.nil?
+                 '::NilClass'
                else
                  "::#{type.name}"
                end
@@ -72,12 +73,14 @@ module Tapioca
           sum.delete_nilclass!
           if sum.size < 2
             "::T.nilable(#{to_sorbet_type(sum.types[0], true)})"
+          elsif (sum.types - [::TrueClass, ::FalseClass]).empty?
+            '::T.nilable(::T::Boolean)'
           else
             "::T.nilable(::T.any(#{sum.types.map { |t| to_sorbet_type(t, true)}.join(', ')}))"
           end
         else
           if (sum.types - [::TrueClass, ::FalseClass]).empty?
-            'T::Boolean'
+            '::T::Boolean'
           else
             "::T.any(#{sum.types.map { |t| to_sorbet_type(t, true)}.join(', ')})"
           end
@@ -116,10 +119,10 @@ class DryAstCompiler
       @types.any? { |t| t.is_a?(Undefined) }
     end
     def include_nilclass?
-      @types.include?(NilClass)
+      @types.include?(::NilClass)
     end
     def delete_nilclass!
-      @types.reject! { |t| t == NilClass }
+      @types.reject! { |t| t == ::NilClass }
     end
     def to_s
       "Sum(#{@types.map(&:to_s).join(',')})"

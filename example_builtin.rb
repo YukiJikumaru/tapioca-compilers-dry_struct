@@ -2,22 +2,23 @@ require 'dry-types'
 require 'dry-struct'
 
 class ExampleBuiltin < ::Dry::Struct
+  Dry::Types.load_extensions(:maybe)
+  Dry::Types.load_extensions(:monads)
+
   module Types
     include ::Dry.Types()
   end
 
-  Dry::Types.load_extensions(:maybe)
-  Dry::Types.load_extensions(:monads)
 
-  attribute :builtin01,  Types::Nominal::Any
-  attribute :builtin02,  Types::Nominal::Nil
-  attribute :builtin03,  Types::Nominal::Symbol
-  attribute :builtin04,  Types::Nominal::Class
-  attribute :builtin05,  Types::Nominal::True
-  attribute :builtin06,  Types::Nominal::False
-  attribute :builtin07,  Types::Nominal::Bool
-  attribute :builtin08,  Types::Nominal::Integer
-  attribute :builtin09,  Types::Nominal::Float
+  attribute :builtin01, Types::Nominal::Any
+  attribute :builtin02, Types::Nominal::Nil
+  attribute :builtin03, Types::Nominal::Symbol
+  attribute :builtin04, Types::Nominal::Class
+  attribute :builtin05, Types::Nominal::True
+  attribute :builtin06, Types::Nominal::False
+  attribute :builtin07, Types::Nominal::Bool
+  attribute :builtin08, Types::Nominal::Integer
+  attribute :builtin09, Types::Nominal::Float
   attribute :builtin10, Types::Nominal::Decimal
   attribute :builtin11, Types::Nominal::String
   attribute :builtin12, Types::Nominal::Date
