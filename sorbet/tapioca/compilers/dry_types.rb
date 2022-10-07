@@ -20,7 +20,7 @@ module Tapioca
         root.create_path(constant) do |klass|
           constant.schema.each do |s|
             attribute_info = compiler.visit(s.to_ast)
-            if s.type.class == ::Dry::Types::Maybe
+            if ::Dry::Types.const_defined?(:Maybe) && s.type.class == ::Dry::Types::Maybe
               sorbet_type = '::T.any(::Dry::Monads::Maybe::Some, ::Dry::Monads::Maybe::None)'
             else
               sorbet_type = self.class.to_sorbet_type(attribute_info[:type], attribute_info[:required])
@@ -38,6 +38,8 @@ module Tapioca
                  sum_to_sorbet_type(type)
                elsif type.is_a?(::DryAstCompiler::Schema)
                  experimental_schema_to_sorbet_type(type)
+               elsif type.is_a?(::DryAstCompiler::Map)
+                 map_to_sorbet_type(type)
                elsif type.is_a?(::DryAstCompiler::Undefined)
                  '::T.untyped'
                elsif type.is_a?(::Array)
@@ -94,6 +96,10 @@ module Tapioca
             "::T.any(#{sum.types.map { |t| to_sorbet_type(t, true)}.join(', ')})"
           end
         end
+      end
+
+      def self.map_to_sorbet_type(map)
+        "::T::Hash[#{map.key}, #{map.value}]"
       end
 
       def self.experimental_schema_to_sorbet_type(schema)
@@ -163,6 +169,14 @@ class DryAstCompiler
     end
   end
 
+  class Map
+    attr_reader :key, :value
+    def initialize(key, value)
+      @key = key
+      @value = value
+    end
+  end
+
   def visit(node)
     meth, rest = node
     public_send(:"visit_#{meth}", rest)
@@ -225,6 +239,10 @@ class DryAstCompiler
 
   def visit_hash(node)
     ::Hash
+  end
+
+  def visit_map(node)
+    Map.new(visit(node[0]), visit(node[1]))
   end
 
   def visit_enum(node)

@@ -2,9 +2,6 @@ require 'dry-types'
 require 'dry-struct'
 
 class ExampleOptional < ::Dry::Struct
-  Dry::Types.load_extensions(:maybe)
-  Dry::Types.load_extensions(:monads)
-
   module Types
     include ::Dry.Types()
   end
@@ -71,25 +68,4 @@ class ExampleOptional < ::Dry::Struct
   attribute :builtin56, Types::JSON::Decimal.optional
   attribute :builtin57, Types::JSON::Array.optional
   attribute :builtin58, Types::JSON::Hash.optional
-
-  attribute :builtin59, Types::Maybe::Strict::Class.optional
-  attribute :builtin60, Types::Maybe::Strict::String.optional
-  attribute :builtin61, Types::Maybe::Strict::Symbol.optional
-  attribute :builtin62, Types::Maybe::Strict::True.optional
-  attribute :builtin63, Types::Maybe::Strict::False.optional
-  attribute :builtin64, Types::Maybe::Strict::Integer.optional
-  attribute :builtin65, Types::Maybe::Strict::Float.optional
-  attribute :builtin66, Types::Maybe::Strict::Decimal.optional
-  attribute :builtin67, Types::Maybe::Strict::Date.optional
-  attribute :builtin68, Types::Maybe::Strict::DateTime.optional
-  attribute :builtin69, Types::Maybe::Strict::Time.optional
-  attribute :builtin70, Types::Maybe::Strict::Array.optional
-  attribute :builtin71, Types::Maybe::Strict::Hash.optional
-
-  attribute :builtin72, Types::Maybe::Coercible::String.optional
-  attribute :builtin73, Types::Maybe::Coercible::Integer.optional
-  attribute :builtin74, Types::Maybe::Coercible::Float.optional
-  attribute :builtin75, Types::Maybe::Coercible::Decimal.optional
-  attribute :builtin76, Types::Maybe::Coercible::Array.optional
-  attribute :builtin77, Types::Maybe::Coercible::Hash.optional
 end

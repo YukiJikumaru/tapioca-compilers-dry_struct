@@ -2,9 +2,6 @@ require 'dry-types'
 require 'dry-struct'
 
 class ExampleNested < ::Dry::Struct
-  Dry::Types.load_extensions(:maybe)
-  Dry::Types.load_extensions(:monads)
-
   module Types
     include ::Dry.Types()
   end
@@ -22,8 +19,6 @@ class ExampleNested < ::Dry::Struct
   attribute? :constructor3, Types.Constructor(::Set)
 
   attribute? :interface1, Types.Interface(:call).optional
-
-  attribute? :hash1, Types::Hash.schema(name: Types::String, age: Types::Coercible::Integer)
 
   attribute  :sum1, Types::Nil | Types::String | Types::Integer
   attribute  :sum2, Types::Nil | Types.Array(Types::String) | Types.Array(Types::Integer)
