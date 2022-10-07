@@ -1,6 +1,8 @@
-require './example_builtin.rb'
-require './example_optional.rb'
-require './example_nested.rb'
-require './example_enum.rb'
-require './example_hash.rb'
-require './example_maybe.rb'
+# typed: ignore
+# frozen_string_literal: true
+require './examples/example_builtin.rb'
+require './examples/example_optional.rb'
+require './examples/example_nested.rb'
+require './examples/example_enum.rb'
+require './examples/example_hash.rb'
+require './examples/example_maybe.rb'

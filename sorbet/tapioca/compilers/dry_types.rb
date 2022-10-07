@@ -1,22 +1,165 @@
+# typed: true
 require 'dry-types'
 require 'dry-struct'
-require 'forwardable'
 
 module Tapioca
   module Compilers
     class DryTypes < Tapioca::Dsl::Compiler
-      extend ::T::Sig
+      extend T::Sig
+
+      class DryAstCompiler
+        class Undefined
+
+          def to_s
+            'Undefined'
+          end
+
+          def inspect
+            to_s
+          end
+        end
+
+        class Sum
+          attr_reader :types
+
+          def initialize(types= [])
+            @types = types
+          end
+
+          def size
+            @types.size
+          end
+
+          def <<(arg)
+            if arg.is_a?(Sum)
+              arg.types.each { |t| @types << t }
+            else
+              @types << arg
+            end
+          end
+
+          def include_undefined?
+            @types.any? { |t| t.is_a?(Undefined) }
+          end
+
+          def include_nilclass?
+            @types.include?(::NilClass)
+          end
+
+          def delete_nilclass!
+            @types.reject! { |t| t == ::NilClass }
+          end
+
+          def to_s
+            "Sum(#{@types.map(&:to_s).join(',')})"
+          end
+
+          def inspect
+            to_s
+          end
+        end
+
+        class Schema
+          def initialize(attribute_infos)
+            @attribute_infos = attribute_infos
+          end
+
+          def map(&block)
+            @attribute_infos.map(&block)
+          end
+
+          def empty?
+            @attribute_infos.empty?
+          end
+        end
+
+        class Map
+          attr_reader :key, :value
+          
+          def initialize(key, value)
+            @key = key
+            @value = value
+          end
+        end
+
+        def visit(node)
+          meth, rest = node
+          public_send(:"visit_#{meth}", rest)
+        end
+
+        def visit_key(node)
+          name, required, rest = node
+          {
+            name: name,
+            required: required,
+            type: visit(rest)
+          }
+        end
+
+        def visit_constructor(node)
+          a, _ = node
+          visit(a)
+        end
+
+        def visit_struct(node)
+          type, _ = node
+          type
+        end
+
+        def visit_sum(node)
+          type = Sum.new
+          node.each do |n|
+            next if n.is_a?(::Hash)
+            type << visit(n)
+          end
+          type
+        end
+
+        def visit_array(node)
+          type = visit(node[0])
+          [type]
+        end
+
+        def visit_constrained(node)
+          types = node.map { |r| visit(r) }.reject { |x| x.nil? }
+          types.size == 1 ? types[0] : types
+        end
+
+        def visit_nominal(node)
+          type, _option = node
+          type
+        end
+
+        def visit_predicate(node)
+          # NOP
+        end
+
+        def visit_schema(node)
+          Schema.new(node[0].map { |n| visit(n) })
+        end
+
+        def visit_hash(node)
+          ::Hash
+        end
+
+        def visit_map(node)
+          Map.new(visit(node[0]), visit(node[1]))
+        end
+
+        def visit_enum(node)
+          visit(node[0][1][0])
+        end
+
+        def visit_any(node)
+          Undefined.new
+        end
+      end
 
       ConstantType = type_member {{ fixed: ::T.class_of(::Dry::Struct) }}
 
-      sig { override.returns(::T::Enumerable[Module]) }
-      def self.gather_constants
-        all_classes.select { |c| c < ::Dry::Struct }
-      end
-
       sig { override.void }
       def decorate
-        compiler = ::DryAstCompiler.new
+        compiler = DryAstCompiler.new
         root.create_path(constant) do |klass|
           constant.schema.each do |s|
             attribute_info = compiler.visit(s.to_ast)
@@ -33,21 +176,27 @@ module Tapioca
         end
       end
 
+      sig { override.returns(::T::Enumerable[Module]) }
+      def self.gather_constants
+        all_classes.select { |c| c < ::Dry::Struct }
+      end
+
+      sig { params(type: T.untyped, required: T::Boolean).returns(String) }
       def self.to_sorbet_type(type, required)
-        base = if type.is_a?(::DryAstCompiler::Sum)
+        base = if type.is_a?(DryAstCompiler::Sum)
                  sum_to_sorbet_type(type)
-               elsif type.is_a?(::DryAstCompiler::Schema)
-                 experimental_schema_to_sorbet_type(type)
-               elsif type.is_a?(::DryAstCompiler::Map)
+               elsif type.is_a?(DryAstCompiler::Schema)
+                 env('DRY_USE_EXPERIMENTAL_SHAPE') ? experimental_schema_to_sorbet_type(type) : '::T::Hash[::T.untyped, ::T.untyped]'
+               elsif type.is_a?(DryAstCompiler::Map)
                  map_to_sorbet_type(type)
-               elsif type.is_a?(::DryAstCompiler::Undefined)
+               elsif type.is_a?(DryAstCompiler::Undefined)
                  '::T.untyped'
                elsif type.is_a?(::Array)
                  "::T::Array[#{to_sorbet_type(type[0], true)}]"
                elsif type == ::Hash
                  '::T::Hash[::T.untyped, ::T.untyped]'
                elsif type == ::Time
-                 ENV['DRY_PREFER_PLAIN_TIME'] ? '::Time' : '::ActiveSupport::TimeWithZone'
+                 env('DRY_PREFER_PLAIN_TIME') ? '::Time' : '::ActiveSupport::TimeWithZone'
                elsif type == ::Range
                  '::T::Range[::T.untyped]'
                elsif type == ::Set
@@ -67,8 +216,6 @@ module Tapioca
           else
             if base.start_with?('::T.nilable')
               base
-            elsif base.match?(/\A\{.*\}\z/)
-              "::T.nilable(#{base.gsub(/(\A\{ | \}\z)/, '')})"
             else
               "::T.nilable(#{base})"
             end
@@ -76,6 +223,7 @@ module Tapioca
         end
       end
 
+      sig { params(sum: DryAstCompiler::Sum).returns(String) }
       def self.sum_to_sorbet_type(sum)
         return '::T.untyped' if sum.include_undefined?
 
@@ -98,10 +246,12 @@ module Tapioca
         end
       end
 
+      sig { params(map: DryAstCompiler::Map).returns(String) }
       def self.map_to_sorbet_type(map)
         "::T::Hash[#{map.key}, #{map.value}]"
       end
 
+      sig { params(schema: DryAstCompiler::Schema).returns(String) }
       def self.experimental_schema_to_sorbet_type(schema)
         return '::T::Hash[::T.untyped, ::T.untyped]' if schema.empty?
 
@@ -112,145 +262,15 @@ module Tapioca
 
         "{ #{sigs.join(', ')} }"
       end
-    end
-  end
-end
 
-class DryAstCompiler
-  class Undefined
-    def to_s
-      'Undefined'
-    end
-    def inspect
-      to_s
-    end
-  end
-
-  class Sum
-    extend ::Forwardable
-
-    delegate [:size] => :@types
-
-    attr_reader :types
-    def initialize(types= [])
-      @types = types
-    end
-    def <<(arg)
-      if arg.is_a?(Sum)
-        arg.types.each { |t| @types << t }
-      else
-        @types << arg
+      sig { params(key: String).returns(T::Boolean) }
+      def self.env(key)
+        v = ENV[key]
+        return false if v.nil?
+        return false if v == '0'
+        true
       end
     end
-    def include_undefined?
-      @types.any? { |t| t.is_a?(Undefined) }
-    end
-    def include_nilclass?
-      @types.include?(::NilClass)
-    end
-    def delete_nilclass!
-      @types.reject! { |t| t == ::NilClass }
-    end
-    def to_s
-      "Sum(#{@types.map(&:to_s).join(',')})"
-    end
-    def inspect
-      to_s
-    end
-  end
-
-  class Schema
-    extend ::Forwardable
-
-    delegate [:map, :empty?] => :@attribute_infos
-
-    def initialize(attribute_infos)
-      @attribute_infos = attribute_infos
-    end
-  end
-
-  class Map
-    attr_reader :key, :value
-    def initialize(key, value)
-      @key = key
-      @value = value
-    end
-  end
-
-  def visit(node)
-    meth, rest = node
-    public_send(:"visit_#{meth}", rest)
-  end
-
-  def visit_key(node)
-    name, required, rest = node
-    {
-      name: name,
-      required: required,
-      type: visit(rest)
-    }
-  end
-
-  def visit_constructor(node)
-    a, _ = node
-    visit(a)
-  end
-
-  def visit_struct(node)
-    type, _ = node
-    type
-  end
-
-  def visit_sum(node)
-    type = Sum.new
-    node.each do |n|
-      next if n.is_a?(::Hash)
-      type << visit(n)
-    end
-    type
-  end
-
-  def visit_array(node)
-    type = visit(node[0])
-    [type]
-  end
-
-  def visit_constrained(node)
-    types = node.map { |r| visit(r) }.reject { |x| x.nil? }
-    types.size == 1 ? types[0] : types
-  end
-
-  def visit_nominal(node)
-    type, _option = node
-    type
-  end
-
-  def visit_predicate(node)
-    # NOP
-  end
-
-  def visit_schema(node)
-    if ENV['DRY_USE_EXPERIMENTAL_SHAPE']
-      Schema.new(node[0].map { |n| visit(n) })
-    else
-      ::Hash
-    end
-  end
-
-  def visit_hash(node)
-    ::Hash
-  end
-
-  def visit_map(node)
-    Map.new(visit(node[0]), visit(node[1]))
-  end
-
-  def visit_enum(node)
-    visit(node[0][1][0])
-  end
-
-  def visit_any(node)
-    Undefined.new
   end
 end
 

@@ -17,9 +17,9 @@ class ExampleHash
   sig { returns(::T.nilable(::T::Hash[::T.untyped, ::T.untyped])) }
   def hash_schema_01; end
 
-  sig { returns(::T.nilable(name: ::String, age: ::Integer)) }
+  sig { returns(::T.nilable({ name: ::String, age: ::Integer })) }
   def hash_schema_02; end
 
-  sig { returns(::T.nilable(name: ::ExampleHash::Klass, age: ::Integer)) }
+  sig { returns(::T.nilable({ name: ::ExampleHash::Klass, age: ::Integer })) }
   def hash_schema_03; end
 end

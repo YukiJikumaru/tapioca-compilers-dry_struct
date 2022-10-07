@@ -44,7 +44,7 @@ class ExampleBuiltin
   sig { returns(::DateTime) }
   def builtin13; end
 
-  sig { returns(::Time) }
+  sig { returns(::ActiveSupport::TimeWithZone) }
   def builtin14; end
 
   sig { returns(::Array) }
@@ -89,7 +89,7 @@ class ExampleBuiltin
   sig { returns(::DateTime) }
   def builtin28; end
 
-  sig { returns(::Time) }
+  sig { returns(::ActiveSupport::TimeWithZone) }
   def builtin29; end
 
   sig { returns(::Array) }
@@ -128,7 +128,7 @@ class ExampleBuiltin
   sig { returns(::DateTime) }
   def builtin41; end
 
-  sig { returns(::Time) }
+  sig { returns(::ActiveSupport::TimeWithZone) }
   def builtin42; end
 
   sig { returns(::T::Boolean) }
@@ -167,7 +167,7 @@ class ExampleBuiltin
   sig { returns(::DateTime) }
   def builtin54; end
 
-  sig { returns(::Time) }
+  sig { returns(::ActiveSupport::TimeWithZone) }
   def builtin55; end
 
   sig { returns(::BigDecimal) }
