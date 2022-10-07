@@ -227,6 +227,10 @@ class DryAstCompiler
     ::Hash
   end
 
+  def visit_enum(node)
+    visit(node[0][1][0])
+  end
+
   def visit_any(node)
     Undefined.new
   end
