@@ -26,6 +26,9 @@ class ExampleNested
   sig { returns(::T::Array[::T::Array[::T.nilable(::T.any(::String, ::Integer))]]) }
   def array7; end
 
+  sig { returns(::T::Array[::ExampleNested::Fooo]) }
+  def array8; end
+
   sig { returns(::T.nilable(::ExampleNested::Fooo)) }
   def constructor1; end
 

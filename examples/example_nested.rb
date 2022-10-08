@@ -32,4 +32,5 @@ class ExampleNested < ::Dry::Struct
   attribute  :array5, Types.Array(Types.Constructor(Fooo))
   attribute  :array6, Types.Array(Types::Nil | Types::String | Types::Integer)
   attribute  :array7, Types.Array(Types.Array(Types::Nil | Types::String | Types::Integer))
+  attribute  :array8, Types.Array(Fooo).constrained(min_size: 1)
 end

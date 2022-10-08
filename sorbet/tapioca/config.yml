@@ -1,5 +1,3 @@
-require:
-  postrequire: sorbet/tapioca/require.rb
 gem:
   # Add your `gem` command parameters here:
   #

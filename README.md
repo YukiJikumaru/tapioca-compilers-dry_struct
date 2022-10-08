@@ -19,7 +19,7 @@ bundle exec tapioca dsl
 
   OR
 
-DRY_PREFER_PLAIN_TIME=1 DRY_USE_EXPERIMENTAL_SHAPE=1 bundle exec tapioca dsl
+DRY_PREFER_PLAIN_TIME=0 DRY_USE_EXPERIMENTAL_SHAPE=1 bundle exec tapioca dsl
 ```
 
 # ENVIRONMENT
@@ -28,12 +28,12 @@ DRY_PREFER_PLAIN_TIME=1 DRY_USE_EXPERIMENTAL_SHAPE=1 bundle exec tapioca dsl
 
 \ | Ruby `Time` is typed as
 ------- | --------
-0 | `::ActiveSupport::TimeWithZone`
+0(DEFAULT) | `::ActiveSupport::TimeWithZone`
 1 | `::Time`
 
 ## DRY_USE_EXPERIMENTAL_SHAPE
 
 \ | `Types::Hash.schema(name: Types::String, age: Types::Integer)` is typed as
 ------- | --------
-0 | `::T::Hash[::T.untyped, ::T.untyped]`
+0(DEFAULT) | `::T::Hash[::T.untyped, ::T.untyped]`
 1 | `{ name: ::String, age: ::Integer }`

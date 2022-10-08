@@ -1,6 +1,11 @@
 # typed: true
 require 'dry-types'
 require 'dry-struct'
+begin
+  require 'dry-monads'
+rescue LoadError
+  # NOP
+end
 
 module Tapioca
   module Compilers
@@ -22,7 +27,7 @@ module Tapioca
         class Sum
           attr_reader :types
 
-          def initialize(types= [])
+          def initialize(types = [])
             @types = types
           end
 
@@ -75,7 +80,7 @@ module Tapioca
 
         class Map
           attr_reader :key, :value
-          
+
           def initialize(key, value)
             @key = key
             @value = value
@@ -115,13 +120,17 @@ module Tapioca
           type
         end
 
+        def visit_and(node)
+          # NOP
+        end
+
         def visit_array(node)
           type = visit(node[0])
           [type]
         end
 
         def visit_constrained(node)
-          types = node.map { |r| visit(r) }.reject { |x| x.nil? }
+          types = node.map { |r| visit(r) }.reject(&:nil?)
           types.size == 1 ? types[0] : types
         end
 
@@ -130,7 +139,7 @@ module Tapioca
           type
         end
 
-        def visit_predicate(node)
+        def visit_predicate(_node)
           # NOP
         end
 
@@ -138,7 +147,7 @@ module Tapioca
           Schema.new(node[0].map { |n| visit(n) })
         end
 
-        def visit_hash(node)
+        def visit_hash(_node)
           ::Hash
         end
 
@@ -150,7 +159,7 @@ module Tapioca
           visit(node[0][1][0])
         end
 
-        def visit_any(node)
+        def visit_any(_node)
           Undefined.new
         end
       end
@@ -227,7 +236,6 @@ module Tapioca
       def self.sum_to_sorbet_type(sum)
         return '::T.untyped' if sum.include_undefined?
 
-        nilable = false
         if sum.include_nilclass?
           sum.delete_nilclass!
           if sum.size < 2
@@ -235,13 +243,13 @@ module Tapioca
           elsif (sum.types - [::TrueClass, ::FalseClass]).empty?
             '::T.nilable(::T::Boolean)'
           else
-            "::T.nilable(::T.any(#{sum.types.map { |t| to_sorbet_type(t, true)}.join(', ')}))"
+            "::T.nilable(::T.any(#{sum.types.map { |t| to_sorbet_type(t, true) }.join(', ')}))"
           end
         else
           if (sum.types - [::TrueClass, ::FalseClass]).empty?
             '::T::Boolean'
           else
-            "::T.any(#{sum.types.map { |t| to_sorbet_type(t, true)}.join(', ')})"
+            "::T.any(#{sum.types.map { |t| to_sorbet_type(t, true) }.join(', ')})"
           end
         end
       end
