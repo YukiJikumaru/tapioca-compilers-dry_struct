@@ -9,7 +9,7 @@ end
 
 module Tapioca
   module Compilers
-    class DryTypes < Tapioca::Dsl::Compiler
+    class DryStruct < Tapioca::Dsl::Compiler
       extend T::Sig
 
       class DryAstCompiler
@@ -186,7 +186,7 @@ module Tapioca
               sorbet_type = self.class.to_sorbet_type(attribute_info[:type], attribute_info[:required])
             end
             klass.create_method(
-              attribute_info[:name],
+              attribute_info[:name].to_s,
               return_type: sorbet_type,
             )
           end

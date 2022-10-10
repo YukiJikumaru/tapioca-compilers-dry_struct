@@ -4,7 +4,6 @@ require 'dry-types'
 require 'dry-struct'
 
 class ExampleHash < ::Dry::Struct
- Dry::Types.load_extensions(:maybe)
   module Types
     include ::Dry.Types()
   end
