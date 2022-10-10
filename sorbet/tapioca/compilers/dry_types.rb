@@ -27,8 +27,8 @@ module Tapioca
         class Sum
           attr_reader :types
 
-          def initialize(types = [])
-            @types = types
+          def initialize
+            @types = ::Set.new
           end
 
           def size
@@ -41,6 +41,14 @@ module Tapioca
             else
               @types << arg
             end
+          end
+
+          def map(&block)
+            @types.map(&block)
+          end
+
+          def first
+            @types.first
           end
 
           def include_undefined?
@@ -239,17 +247,19 @@ module Tapioca
         if sum.include_nilclass?
           sum.delete_nilclass!
           if sum.size < 2
-            "::T.nilable(#{to_sorbet_type(sum.types[0], true)})"
+            "::T.nilable(#{to_sorbet_type(sum.first, true)})"
           elsif (sum.types - [::TrueClass, ::FalseClass]).empty?
             '::T.nilable(::T::Boolean)'
           else
-            "::T.nilable(::T.any(#{sum.types.map { |t| to_sorbet_type(t, true) }.join(', ')}))"
+            "::T.nilable(::T.any(#{sum.map { |t| to_sorbet_type(t, true) }.join(', ')}))"
           end
         else
           if (sum.types - [::TrueClass, ::FalseClass]).empty?
             '::T::Boolean'
+          elsif sum.size == 1
+            to_sorbet_type(sum.first, true)
           else
-            "::T.any(#{sum.types.map { |t| to_sorbet_type(t, true) }.join(', ')})"
+            "::T.any(#{sum.map { |t| to_sorbet_type(t, true) }.join(', ')})"
           end
         end
       end

@@ -22,9 +22,6 @@ class ExampleNested < ::Dry::Struct
 
   attribute? :interface1, Types.Interface(:call).optional
 
-  attribute  :sum1, Types::Nil | Types::String | Types::Integer
-  attribute  :sum2, Types::Nil | Types.Array(Types::String) | Types.Array(Types::Integer)
-
   attribute  :array1, Types.Array(Types::String)
   attribute? :array2, Types.Array(Types::String)
   attribute? :array3, Types.Array(Types::String.optional)

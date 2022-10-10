@@ -49,10 +49,4 @@ class ExampleNested
 
   sig { returns(::T.untyped) }
   def interface1; end
-
-  sig { returns(::T.nilable(::T.any(::String, ::Integer))) }
-  def sum1; end
-
-  sig { returns(::T.nilable(::T.any(::T::Array[::String], ::T::Array[::Integer]))) }
-  def sum2; end
 end
