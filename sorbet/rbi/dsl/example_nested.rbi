@@ -5,30 +5,6 @@
 # Please instead update this file by running `bin/tapioca dsl ExampleNested`.
 
 class ExampleNested
-  sig { returns(::T::Array[::String]) }
-  def array1; end
-
-  sig { returns(::T.nilable(::T::Array[::String])) }
-  def array2; end
-
-  sig { returns(::T.nilable(::T::Array[::T.nilable(::String)])) }
-  def array3; end
-
-  sig { returns(::T::Array[::ExampleNested::Fooo]) }
-  def array4; end
-
-  sig { returns(::T::Array[::ExampleNested::Fooo]) }
-  def array5; end
-
-  sig { returns(::T::Array[::T.nilable(::T.any(::String, ::Integer))]) }
-  def array6; end
-
-  sig { returns(::T::Array[::T::Array[::T.nilable(::T.any(::String, ::Integer))]]) }
-  def array7; end
-
-  sig { returns(::T::Array[::ExampleNested::Fooo]) }
-  def array8; end
-
   sig { returns(::T.nilable(::ExampleNested::Fooo)) }
   def constructor1; end
 
