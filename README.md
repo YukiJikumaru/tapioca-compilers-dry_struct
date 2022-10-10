@@ -11,15 +11,11 @@ https://github.com/Shopify/tapioca/issues/1210
 # Installation
 
 ```
-cp sorbet/tapioca/compilers/dry_types.rb PATH_TO_YOUR_PROJECT/sorbet/tapioca/compilers/dry_types.rb
+cp sorbet/tapioca/compilers/dry_struct.rb PATH_TO_YOUR_PROJECT/sorbet/tapioca/compilers/dry_struct.rb
 
 cd PATH_TO_YOUR_PROJECT
 
-bundle exec rake dsl
-
-  OR
-
-DRY_PREFER_PLAIN_TIME=0 DRY_USE_EXPERIMENTAL_SHAPE=1 bundle exec rake dsl
+bundle exec tapioca dsl
 ```
 
 # Development
