@@ -9,10 +9,38 @@ end
 
 module Tapioca
   module Compilers
+    # tapioca's [custom DSL compilers](https://github.com/Shopify/tapioca/blob/main/README.md#writing-custom-dsl-compilers)
+    # for [dry-struct](https://dry-rb.org/gems/dry-struct/).
     class DryStruct < Tapioca::Dsl::Compiler
       extend T::Sig
 
+      # Convert Dry AST to type informations
+      #
+      # @example
+      # ```
+      # compiler = DryAstCompiler.new
+      # DryStructClass.schema.each do |s|
+      #   attribute_info = compiler.visit(s.to_ast)
+      #
+      #   # => { name: 'attr_name01', required: true, type: String }
+      #   # => { name: 'attr_name02', required: true, type: Integer }
+      #   # => { name: 'attr_name03', required: true, type: [String] }
+      #   # => { name: 'attr_name04', required: true, type: [[String]] }
+      #   # => { name: 'attr_name05', required: true, type: Hash }
+      #   # => { name: 'attr_name06', required: true, type: Date }
+      #   # => { name: 'attr_name07', required: true, type: DateTime }
+      #   # => { name: 'attr_name08', required: true, type: Time }
+      #   # => { name: 'attr_name09', required: true, type: Set }
+      #   # => { name: 'attr_name10', required: true, type: Range }
+      #   # => { name: 'attr_name11', required: true, type: YourKlass }
+      #   # => { name: 'attr_name12', required: true, type: #<DryAstCompiler::Undefined> }
+      #   # => { name: 'attr_name13', required: true, type: #<DryAstCompiler::Sum> }
+      #   # => { name: 'attr_name14', required: true, type: #<DryAstCompiler::Map> }
+      #   # => { name: 'attr_name15', required: true, type: #<DryAstCompiler::Schema> }
+      # do
+      # ```
       class DryAstCompiler
+        # Represents dry's any type
         class Undefined
 
           def to_s
@@ -24,6 +52,7 @@ module Tapioca
           end
         end
 
+        # Represents dry's sum type
         class Sum
           attr_reader :types
 
@@ -72,6 +101,7 @@ module Tapioca
           end
         end
 
+        # Represents dry's schema type
         class Schema
           def initialize(attribute_infos)
             @attribute_infos = attribute_infos
@@ -86,6 +116,7 @@ module Tapioca
           end
         end
 
+        # Represents dry's map type
         class Map
           attr_reader :key, :value
 
