@@ -1,4 +1,5 @@
 # typed: true
+# frozen_string_literal: true
 require 'dry-types'
 require 'dry-struct'
 begin
@@ -13,6 +14,8 @@ module Tapioca
     # for [dry-struct](https://dry-rb.org/gems/dry-struct/).
     class DryStruct < Tapioca::Dsl::Compiler
       extend T::Sig
+
+      VERSION = '0.0.0'
 
       # Convert Dry AST to type informations
       #

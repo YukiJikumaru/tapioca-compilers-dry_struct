@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'tapioca'
+require 'tapioca/internal'
+
+rbi_formatter = ::Tapioca::DEFAULT_RBI_FORMATTER
+rbi_formatter.max_line_length = 120
+
+command = ::Tapioca::Commands::Dsl.new(
+  requested_constants: [],
+  outpath: ::Pathname.new(::Tapioca::DEFAULT_DSL_DIR),
+  only: [],
+  exclude: [],
+  file_header: true,
+  tapioca_path: ::Tapioca::TAPIOCA_DIR,
+  should_verify: false,
+  quiet: false,
+  verbose: false,
+  number_of_workers: 1,
+  rbi_formatter: rbi_formatter,
+)
+
+command.execute

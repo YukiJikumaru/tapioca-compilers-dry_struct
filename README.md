@@ -10,17 +10,38 @@ https://github.com/Shopify/tapioca/issues/1210
 
 # Installation
 
+cp lib/tapioca/dsl/compilers/dry_struct.rb PATH_TO_YOUR_PROJECT/sorbet/tapioca/compilers/dry_struct.rb
+
+-----------------------------------
+
+Add this line to your application’s Gemfile:
+
 ```
-cp sorbet/tapioca/compilers/dry_struct.rb PATH_TO_YOUR_PROJECT/sorbet/tapioca/compilers/dry_struct.rb
+gem 'tapioca-compilers-dry_struct'
+```
 
-cd PATH_TO_YOUR_PROJECT
+And then execute:
 
-bundle exec tapioca dsl
+```
+$ bundle
+```
+
+>  all the gem needs to do is to place the DSL compiler inside the lib/tapioca/dsl/compilers folder and it will be automatically discovered and loaded by Tapioca.
+>
+> https://github.com/Shopify/tapioca/blob/v0.10.2/README.md#writing-custom-dsl-compilers
+
+Tapioca automatically load the compiler inside gem, just you need to do is type a command below.
+
+```
+$ bundle exec tapioca dsl
 ```
 
 # Development
 
-Add rb files under `spec/examples/` and execute `bundle exec rake dsl` generates rbi files under `sorbet/rbi/dsl/`.
+Execute `./bin/dsl` generates rbi files under `sorbet/rbi/dsl/`.
+If you need to test another dry-struct, add or edit rb files under `spec/examples/` and generate rbi files.
+
+A compiler itself exists in `lib/tapioca/dsl/compilers/dry_struct.rb`.
 
 # Test
 

@@ -1,4 +1,3 @@
 /vendor/
 /tmp/
-/sorbet/rbi/dsl/
 Gemfile.lock

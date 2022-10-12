@@ -10,9 +10,7 @@ Gem::Specification.new do |spec|
   spec.summary       = "Tapioca's compiler for dry-struct"
   spec.description   = spec.summary
   spec.homepage      = "https://github.com/YukiJikumaru/tapioca-compilers-dry_struct"
-  spec.files         = Dir["README.md", "CHANGELOG.md", "tapioca-compilers-dry_struct.gemspec", "bin/setup", "lib/tapioca/compilers/dry_struct.rb"]
-  spec.bindir        = "bin"
-  spec.executables   = ["setup"]
+  spec.files         = Dir["README.md", "CHANGELOG.md", "tapioca-compilers-dry_struct.gemspec", "lib/tapioca/dsl/compilers/dry_struct.rb"]
   spec.require_paths = ["lib"]
 
   spec.metadata["allowed_push_host"] = "https://rubygems.org"
