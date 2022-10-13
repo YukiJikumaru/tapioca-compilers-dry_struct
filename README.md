@@ -10,10 +10,6 @@ https://github.com/Shopify/tapioca/issues/1210
 
 # Installation
 
-cp lib/tapioca/dsl/compilers/dry_struct.rb PATH_TO_YOUR_PROJECT/sorbet/tapioca/compilers/dry_struct.rb
-
------------------------------------
-
 Add this line to your application’s Gemfile:
 
 ```

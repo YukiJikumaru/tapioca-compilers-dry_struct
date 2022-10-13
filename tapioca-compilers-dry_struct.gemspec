@@ -5,9 +5,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Yuki Jikumaru"]
   spec.email         = ["jikumaruyuki@gmail.com"]
   spec.license       = "MIT"
-  spec.version       = "0.0.0"
+  spec.version       = "0.0.1"
 
-  spec.summary       = "Tapioca's compiler for dry-struct"
+  spec.summary       = "Tapioca's custom DSL compiler for dry-struct"
   spec.description   = spec.summary
   spec.homepage      = "https://github.com/YukiJikumaru/tapioca-compilers-dry_struct"
   spec.files         = Dir["README.md", "CHANGELOG.md", "tapioca-compilers-dry_struct.gemspec", "lib/tapioca/dsl/compilers/dry_struct.rb"]
@@ -20,12 +20,11 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 2.7.0"
 
-  # to update dependencies edit project.yml
   spec.add_runtime_dependency "tapioca", ">= 0.10"
   spec.add_runtime_dependency "dry-struct", ">= 1.2"
-  spec.add_runtime_dependency "dry-monads", ">= 1.2"
 
   spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "rake", ">= 12.0"
+  spec.add_development_dependency "rspec", ">= 3.10"
+  spec.add_development_dependency "dry-monads", ">= 1.2"
 end
