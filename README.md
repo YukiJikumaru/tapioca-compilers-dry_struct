@@ -2,8 +2,6 @@
 
 [![Gem Version](https://badge.fury.io/rb/tapioca-compilers-dry_struct.svg)](https://badge.fury.io/rb/tapioca-compilers-dry_struct) ![github action badge](https://github.com/YukiJikumaru/tapioca-compilers-dry_struct/actions/workflows/main.yml/badge.svg)
 
-**[WARNING] THIS APP IS ALPHA VERSION!!!**
-
 This script is a [Tapioca's custom DSL compiler](https://github.com/Shopify/tapioca#writing-custom-dsl-compilers) for [dry-struct](https://dry-rb.org/gems/dry-struct/main/).
 
 From this ruby code,
