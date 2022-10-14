@@ -5,7 +5,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Yuki Jikumaru"]
   spec.email         = ["jikumaruyuki@gmail.com"]
   spec.license       = "MIT"
-  spec.version       = "0.0.2"
+  spec.version       = "0.0.3"
 
   spec.summary       = "Tapioca's custom DSL compiler for dry-struct"
   spec.description   = spec.summary
